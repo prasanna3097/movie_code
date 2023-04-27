@@ -43,10 +43,10 @@ const convertDbDirectorToResponseObject = (dbObject) => {
   };
 };
 
-app.get("/movies/", async (request, require) => {
+app.get("/movies/", async (request, response) => {
   const getMoviesQuery = `
     SELECT movie_name
-    FROM movie`;
+    FROM movie;`;
   const moviesArray = await db.all(getMoviesQuery);
   response.send(
     moviesArray.map((eachMovie) => ({ movieName: eachMovie.movie_name }))
@@ -63,9 +63,8 @@ app.post("/movies/", async (request, response) => {
       (
         ${directorId},
          '${movieName}',
-         ${leadActor},
-         
-      );`;
+         '${leadActor}'
+         );`;
 
   await db.run(addMovieQuery);
   response.send("Movie Successfully Added");
@@ -91,8 +90,9 @@ app.put("/movies/:movieId/", async (request, response) => {
     SET 
         director_id = ${directorId},
         movie_name = '${movieName}',
-        lead_actor = '${leadActor},'
-    WHERE movie_id = ${movieId};`;
+        lead_actor = '${leadActor}'
+    WHERE 
+        movie_id = ${movieId};`;
   await db.run(updateMoviesQuery);
   response.send("Movie Details Updated");
 });
@@ -101,8 +101,9 @@ app.delete("/movies/:movieId/", async (request, response) => {
   const { movieId } = request.params;
   const deleteMovieQuery = `
      DELETE FROM
-     movie
-     WHERE movie_id = ${movie_id};`;
+        movie
+     WHERE 
+        movie_id = ${movieId};`;
   await db.run(deleteMovieQuery);
   response.send("Movie Removed");
 });
@@ -124,8 +125,8 @@ app.get("/directors/:directorId/movies/", async (request, response) => {
   const getDirectorQuery = `
     SELECT 
         movie_name
-    from movie
-    WHERE director_id = ${directorId};`;
+    FROM movie
+    WHERE director_id = '${directorId}';`;
   const moviesArray = await db.all(getDirectorQuery);
   response.send(
     moviesArray.map((eachMovie) => ({ movieName: eachMovie.movie_name }))
